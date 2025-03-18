@@ -1,0 +1,220 @@
+Used Playstation Buttons
+
+Region searched: (441, 423, 979, 181)
+Top left Corner: (441, 423)
+Top Right Corner: (1420, 423)
+Bottom left Corner: (441, 604)
+Bottom Right Corner: (1420, 604)
+
+found square at: 656
+
+found r1 at: 453
+
+found circle at: 314
+
+Currently {'square0': 656, 'r10': 453, 'circle0': 314}
+
+Double Checking
+
+Checked, Currently {'square0': 656, 'r10': 453, 'circle0': 314}
+
+circle0 at 314 pressed
+
+r10 at 453 pressed
+
+square0 at 656 pressed
+
+
+Order pressed: ['circle0', 'r10', 'square0']
+
+-----------------------------------------------------------------------------------------
+
+found triangle at: 657
+
+found square at: 311
+
+found l1 at: 455
+
+Currently {'triangle0': 657, 'square1': 311, 'l10': 455}
+
+Double Checking
+
+Checked, Currently {'triangle0': 657, 'square1': 311, 'l10': 455}
+
+square1 at 311 pressed
+
+l10 at 455 pressed
+
+triangle0 at 657 pressed
+
+
+Order pressed: ['square1', 'l10', 'triangle0']
+
+-----------------------------------------------------------------------------------------
+
+found l1 at: 455
+
+found square at: 656
+
+found X at: 311
+
+Currently {'l11': 455, 'square2': 656, 'X0': 311}
+
+Double Checking
+
+Checked, Currently {'l11': 455, 'square2': 656, 'X0': 311}
+
+X0 at 311 pressed
+
+l11 at 455 pressed
+
+square2 at 656 pressed
+
+
+Order pressed: ['X0', 'l11', 'square2']
+
+-----------------------------------------------------------------------------------------
+
+found circle at: 817
+
+Currently {'circle1': 817}
+
+Double Checking
+
+Checked, Currently {'circle1': 817}
+
+circle1 at 817 pressed
+
+
+Order pressed: ['circle1']
+
+-----------------------------------------------------------------------------------------
+
+found l1 at: 455
+
+found circle at: 314
+
+found X at: 656
+
+Currently {'l12': 455, 'circle2': 314, 'X1': 656}
+
+Double Checking
+
+Checked, Currently {'l12': 455, 'circle2': 314, 'X1': 656}
+
+circle2 at 314 pressed
+
+l12 at 455 pressed
+
+X1 at 656 pressed
+
+
+Order pressed: ['circle2', 'l12', 'X1']
+
+-----------------------------------------------------------------------------------------
+
+found triangle at: 657
+
+found l1 at: 282
+
+found circle at: 486
+
+Currently {'triangle1': 657, 'l13': 282, 'circle3': 486}
+
+Double Checking
+
+Checked, Currently {'triangle1': 657, 'l13': 282, 'circle3': 486}
+
+l13 at 282 pressed
+
+circle3 at 486 pressed
+
+triangle1 at 657 pressed
+
+
+Order pressed: ['l13', 'circle3', 'triangle1']
+
+-----------------------------------------------------------------------------------------
+
+found circle at: 857
+
+Currently {'circle4': 857}
+
+Double Checking
+
+Checked, Currently {'circle4': 857}
+
+circle4 at 857 pressed
+
+
+Order pressed: ['circle4']
+
+-----------------------------------------------------------------------------------------
+
+found square at: 311
+
+found square at: 656
+
+found X at: 483
+
+Currently {'square3': 311, 'square4': 656, 'X2': 483}
+
+Double Checking
+
+Checked, Currently {'square3': 311, 'square4': 656, 'X2': 483}
+
+square3 at 311 pressed
+
+X2 at 483 pressed
+
+square4 at 656 pressed
+
+
+Order pressed: ['square3', 'X2', 'square4']
+
+-----------------------------------------------------------------------------------------
+
+found circle at: 851
+
+Currently {'circle5': 851}
+
+Double Checking
+
+Checked, Currently {'circle5': 851}
+
+circle5 at 851 pressed
+
+
+Order pressed: ['circle5']
+
+-----------------------------------------------------------------------------------------
+
+found circle at: 486
+
+found circle at: 659
+
+found square at: 311
+
+Currently {'circle6': 486, 'circle7': 659, 'square5': 311}
+
+Double Checking
+
+Checked, Currently {'circle6': 486, 'circle7': 659, 'square5': 311}
+
+square5 at 311 pressed
+
+circle6 at 486 pressed
+
+circle7 at 659 pressed
+
+
+Order pressed: ['square5', 'circle6', 'circle7']
+
+-----------------------------------------------------------------------------------------
+
+X: 3 found
+circle: 8 found
+square: 6 found
+triangle: 2 found
+r1: 1 found
+l1: 4 found
