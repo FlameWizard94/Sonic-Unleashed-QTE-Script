@@ -7,6 +7,15 @@ import time
 from pyscreeze import ImageNotFoundException
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import keyboard
+from functools import partial
+from pathlib import Path
+import pyaudio  
+import wave  
+   
+
+
+#import cProfile
 
 # Function to press a button on the virtual gamepad
 def button_press(press, buttons, gamepad):
@@ -17,12 +26,12 @@ def button_press(press, buttons, gamepad):
     time.sleep(0.05)
     gamepad.release_button(button=buttons[press])
     gamepad.update()
-    time.sleep(0.1)  # Avoid press overlap
+    time.sleep(0.05)  # Avoid press overlap
 
 
 # Function to detect a specific button
 def detect_button(button, template, stop_event, distance):
-    global num_found, current, searched, screenshot, logs, check
+    global num_found, current, searched, screenshot, logs, check, region
     while not stop_event.is_set():
         confidence = 0.84
         if button == 'circle':
@@ -50,7 +59,7 @@ def detect_button(button, template, stop_event, distance):
                         num_found[button] += 1
                         check = 1 # If new button found, signal check for more
 
-                        logs += f"found {button} at: {element.left}\n\n"
+                        logs.append(f"found {button} at: {element.left}\n\n")
 
                 searched[button] = 1
                 condition.notify_all()
@@ -60,7 +69,6 @@ def detect_button(button, template, stop_event, distance):
                 # Mark this button as searched
                 searched[button] = 1
                 condition.notify_all()
-        #time.sleep(0.1)  # Small delay to avoid excessive CPU usage
 
 
 # Function to process the current dictionary and press buttons in order
@@ -76,19 +84,19 @@ def process_current(buttons, gamepad, region):
             if check == 0:
                 #If we double checked
                 if current:
-                    logs += f'Checked, Currently {current}\n\n'
+                    logs.append(f'Checked, Currently {current}\n\n')
                 # Sort buttons by their x-coordinate (left to right)
                 order = {k: v for k, v in sorted(current.items(), key=lambda item: item[1])}
 
                 for button, place in order.items():
                     button_press(button, buttons, gamepad)
-                    logs += f'{button} at {place} pressed\n\n'
+                    logs.append(f'{button} at {place} pressed\n\n')
 
                 if order:
-                    logs += f'\nOrder pressed: {list(order.keys())}\n\n'
-                    logs += f'-----------------------------------------------------------------------------------------\n\n'
+                    logs.append(f'\nOrder pressed: {list(order.keys())}\n\n')
+                    logs.append(f'-----------------------------------------------------------------------------------------\n\n')
 
-                time.sleep(0.5) # Forced wait. Without it script fucks up scenerios with 2 QTEs in a row. Teseted in Empire City DLC Act 1
+                time.sleep(0.4) # Forced wait. Without it script fucks up scenerios with 2 QTEs in a row. Teseted in Empire City DLC Act 1
                                 # Mistakes 3rd button in the first QTE with the fourth button in the next one.
                                 # Takes about 23 frames (less than half a second) between the last button press, and that button faidn away
                                 
@@ -97,8 +105,12 @@ def process_current(buttons, gamepad, region):
                 current.clear()
 
                 # Take a new screenshot
-                snapshot = pyautogui.screenshot(region=region)
-                screenshot = np.array(snapshot) 
+                try:
+                    snapshot = pyautogui.screenshot(region=region)
+                    screenshot = np.array(snapshot) 
+                except OSError:
+                    pass
+
 
                 for button in searched:
                     searched[button] = 0
@@ -107,24 +119,29 @@ def process_current(buttons, gamepad, region):
 
             else:
                 # Make a new screenshot to double check that there's no other buttons
-                logs += f'Currently {current}\n\nDouble Checking\n\n'
+                logs.append(f'Currently {current}\n\nDouble Checking\n\n')
                 for button in searched.keys():
                     searched[button] = 0
 
-                time.sleep(0.1) # Wait so screenshot has best chance of seeing other buttons
-                snapshot = pyautogui.screenshot(region=region)
-                screenshot = np.array(snapshot)
+                time.sleep(0.05) # Wait so screenshot has best chance of seeing other buttons
+
+                try:
+                    snapshot = pyautogui.screenshot(region=region)
+                    screenshot = np.array(snapshot)
+                except OSError:
+                    pass
+
                 check = 0
                 condition.notify_all()
 
-def setup():
+def setup(script_dir):
     region = () # Where QTE buttons appear
     buttons = {} # Controller buttons
     images = {} # Where button images are stored
     gamepad  = None # Virtual controller that performs QTEs
     num_found = {} # Stores total buttons found during operation
     searched = {} # Track if each button has been searched (0 = searched, 1 = searched)
-    logs = '' # You can see script info in the file QTE_logs
+    logs = [] # You can see script info in the file QTE_logs
     button_type = None
 
     screen_width, screen_height = pyautogui.size() # Get the size of the primary monitor.
@@ -154,18 +171,18 @@ def setup():
                 'l': vgamepad.DS4_BUTTONS.DS4_BUTTON_SHOULDER_LEFT
             }
             images = {
-                'square': 'buttons/playstation/square.png',
-                'triangle': 'buttons/playstation/triangle.png',
-                'X': 'buttons/playstation/X.png',
-                'circle': 'buttons/playstation/circle.png',
-                'r1': 'buttons/playstation/r1.png',
-                'l1': 'buttons/playstation/l1.png'
+                'square': script_dir / 'buttons/playstation/square.png',
+                'triangle': script_dir / 'buttons/playstation/triangle.png',
+                'X': script_dir / 'buttons/playstation/X.png',
+                'circle': script_dir / 'buttons/playstation/circle.png',
+                'r1': script_dir / 'buttons/playstation/r1.png',
+                'l1': script_dir / 'buttons/playstation/l1.png'
             }
             num_found = {'X': 0, 'circle': 0, 'square': 0, 'triangle': 0, 'r1': 0, 'l1': 0}
             searched = {'square': 0, 'circle': 0, 'X': 0, 'triangle': 0, 'r1': 0, 'l1': 0}
             gamepad = vgamepad.VDS4Gamepad()
 
-            logs += f'Used Playstation Buttons\n\n'
+            logs.append(f'Used Playstation Buttons\n\n')
             print('Using Playstation buttons\n')
 
         elif button_type == 0:
@@ -178,28 +195,28 @@ def setup():
                 'l': vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER
             }
             images = {
-                'a': 'buttons/xbox/a.png', 
-                'b': 'buttons/xbox/b.png',  
-                'X': 'buttons/xbox/x.png', 
-                'y': 'buttons/xbox/y.png',  
-                'rb': 'buttons/xbox/rb.png',  
-                'lb': 'buttons/xbox/lb.png'   
+                'a': script_dir / 'buttons/xbox/a.png', 
+                'b': script_dir / 'buttons/xbox/b.png',  
+                'X': script_dir / 'buttons/xbox/x.png', 
+                'y': script_dir / 'buttons/xbox/y.png',  
+                'rb': script_dir / 'buttons/xbox/rb.png',  
+                'lb': script_dir / 'buttons/xbox/lb.png'   
             }
             num_found = {'a': 0, 'b': 0, 'X': 0, 'y': 0, 'rb': 0, 'lb': 0}
             searched = {'a': 0, 'b': 0, 'X': 0, 'y': 0, 'rb': 0, 'lb': 0}
             gamepad = vgamepad.VX360Gamepad()
 
-            logs += f'Used Xbox Buttons\n\n'
+            logs.append(f'Used Xbox Buttons\n\n')
             print('Using Xbox buttons\n')
 
         else:
             print("Please enter 1 for Playstation or 0 for Xbox")
 
-    logs += f'Region searched: {region}\n'
-    logs += f'Top left Corner: {top_left}\n'
-    logs += f'Top Right Corner: {top_right}\n'
-    logs += f'Bottom left Corner: {bottom_left}\n'
-    logs += f'Bottom Right Corner: {bottom_right}\n\n'
+    logs.append(f'Region searched: {region}\n')
+    logs.append(f'Top left Corner: {top_left}\n')
+    logs.append(f'Top Right Corner: {top_right}\n')
+    logs.append(f'Bottom left Corner: {bottom_left}\n')
+    logs.append(f'Bottom Right Corner: {bottom_right}\n\n')
 
     return region, buttons, images, gamepad, num_found, searched, logs
 
@@ -209,12 +226,62 @@ def listen_for_input(event):
     input("\nPress Enter to stop the script\nDetecting...\n")
     event.set()
     with lock:
-        condition.notify_all() 
+        condition.notify_all()
 
+class KeyboardWatcher:
+    def __init__(self):
+        self.stop_event = threading.Event()
+        self.listener_thread = None
+        
+    def _listen(self, callback):
+        """Internal thread function"""
+        keyboard.wait('enter')  # Blocks until Enter is pressed
+        callback()
+        
+    def start(self, callback):
+        """Start watching for Enter key in background"""
+        self.listener_thread = threading.Thread(
+            target=self._listen,
+            args=(callback,),
+            daemon=True
+        )
+        self.listener_thread.start()
+    
+    def end(self):
+        keyboard.unhook_all()
+        self.listener_thread.join(timeout=0.1)
+
+def Stop(stop_event):
+    print(f'Program Exiting...')
+    stop_event.set()
+    #sys.exit(0)
+
+def End_SFX(script_dir):
+    chunk = 1024  
+  
+    sound_location = script_dir / "end_script_sound.wav"
+    f = wave.open(rf"{sound_location}", "rb")   
+    p = pyaudio.PyAudio()  
+    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
+                    channels = f.getnchannels(),  
+                    rate = f.getframerate(),  
+                    output = True)  
+ 
+    data = f.readframes(chunk)  
+    
+    while data:  
+        stream.write(data)  
+        data = f.readframes(chunk)  
+    
+    stream.stop_stream()  
+    stream.close()  
+     
+    p.terminate() 
 
 def main():
     global current, lock, condition, check, region, buttons, images, gamepad, num_found, searched, logs, screenshot, stop_event
 
+    script_dir = Path(__file__).parent
     pid = os.getpid()
     print(f'\nPID: {pid}')
 
@@ -224,16 +291,27 @@ def main():
     check = 0  # Used to see if a double check should occur
 
     # Setup the gamepad, buttons, and region etc
-    region, buttons, images, gamepad, num_found, searched, logs = setup()
+    region, buttons, images, gamepad, num_found, searched, logs = setup(script_dir)
+
+    print(f'\nPress Enter to stop\n')
 
     # Taking a screenshot and analyzing it ensures that each thread is looking at the same image
-    snapshot = pyautogui.screenshot(region=region)
-    screenshot = np.array(snapshot)
+    k = True
+    while k:
+        try:
+            snapshot = pyautogui.screenshot(region=region)
+            screenshot = np.array(snapshot)
+            k = False 
+        except OSError:
+            pass
 
     stop_event = threading.Event()
 
-    input_thread = threading.Thread(target=listen_for_input, args=(stop_event,), daemon=True)
-    input_thread.start()
+    watcher = KeyboardWatcher()
+    watcher.start(partial(Stop, stop_event))
+
+    #input_thread = threading.Thread(target=listen_for_input, args=(stop_event,), daemon=True)
+    #input_thread.start()
 
     # Create a thread pool for parallel button detection
     with ThreadPoolExecutor(max_workers=len(images)) as executor:
@@ -259,12 +337,13 @@ def main():
     process_thread.join(timeout=1)
 
     for name, count in num_found.items():
-        logs += f"{name}: {count} found\n"
+        logs.append(f"{name}: {count} found\n")
 
-    with open("QTE_logs.txt", "w") as f:
-        f.write(logs)
-
-    print("Done")
+    with open(script_dir / "QTE_logs.txt", "w") as f:
+        f.writelines(logs)
+        f.close()
 
 if __name__ == "__main__":
     main()
+    script_dir = Path(__file__).parent
+    End_SFX(script_dir)

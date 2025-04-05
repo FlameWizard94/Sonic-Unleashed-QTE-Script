@@ -21,7 +21,7 @@ Only works if: <br>
 ![control_tutorial](control_tutorial.png)
 
 ## Prerequisites
-1. Have Python downloaded
+1. Have Python 3 downloaded
 
 ## Installation
 1. Download the zip in releases
