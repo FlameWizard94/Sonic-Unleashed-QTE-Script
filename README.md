@@ -25,7 +25,7 @@ Only works if: <br>
 - **Script doesn't work in Tornado stages.**
 
 ## Prerequisites
-1. Have Python 3 downloaded
+1. Have Python 3 downloaded : https://www.python.org/downloads/
 
 ## Installation
 1. Download the zip in releases
