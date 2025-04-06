@@ -20,6 +20,10 @@ Only works if: <br>
 
 ![control_tutorial](control_tutorial.png)
 
+- It works for Werehog, but isn't that fast (it was made for QTEs in day stages).<br>Don't rely on it too much in Night stages. This script can fail if you trigger Werehog QTEs too quickly.
+
+- **Script doesn't work in Tornado stages.**
+
 ## Prerequisites
 1. Have Python 3 downloaded
 
@@ -33,4 +37,4 @@ Only works if: <br>
 1. Run the Python script "unleashed_qte_script.py"
 1. It will ask you to enter 1 or 0 for searching Playstation or Xbox buttons respectively
 1. Pick a number for the buttons you use and press Enter (The script will say it's detecting).
-1. Press Enter in the terminal to end the script.
+1. Press Enter in the terminal to end the script.<br> You'll hear a slash sfx from SatBK when it ends.
