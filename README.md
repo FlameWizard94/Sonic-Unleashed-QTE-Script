@@ -14,7 +14,7 @@ Only works if: <br>
 	The script looks at your monitor display, not the Unleasded window).
 	
 ## Notes
-- Turn of control tutorials in the settings. <br>
+- Turn off control tutorials in the settings. <br>
 	These can trigger the script in unintended places <br>
 	For example, when it tells you to slide (Adabat Act 1)
 
